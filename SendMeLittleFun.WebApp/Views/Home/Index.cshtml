@@ -1,0 +1,47 @@
+﻿@model SendMeLittleFun.WebApp.Models.User;
+
+@{
+    ViewData["Title"] = "Request an email with little fun right here";
+}
+
+<h1 class="display-5">Привет! Меня зовут Сергей, <br /> я отправлю тебе немного литтлфана на email.</h1> <br /> <br />
+
+<div class="row">
+    <div class="col-md-9">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Schedule" class="control-label"></label>
+                <input asp-for="Schedule" class="form-control" />
+                <span asp-validation-for="Schedule" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+            <br />
+            <b>@ViewBag.message</b>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+   @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
