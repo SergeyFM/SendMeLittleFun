@@ -12,21 +12,13 @@ public class HomeController : Controller {
         _user = user;
     }
 
-    public IActionResult Index() {
-        return View();
-    }
+    public IActionResult Index() => View();
 
-    public IActionResult Privacy() {
-        return View();
-    }
+    public IActionResult Privacy() => View();
 
-    public IActionResult Register() {
-        return View();
-    }
+    public IActionResult Register() => View();
 
-    public IActionResult Create() {
-        return View();
-    }
+    public IActionResult Create() => View();
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -47,7 +39,5 @@ public class HomeController : Controller {
 
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error() {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
+    public IActionResult Error() => View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 }
