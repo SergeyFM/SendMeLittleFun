@@ -1,15 +1,18 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using SendMeLittleFun.WebApp.Models;
+using SendMeLittleFun.WebApp.Services;
 
 namespace SendMeLittleFun.WebApp.Controllers;
 public class HomeController : Controller {
     private readonly ILogger<HomeController> _logger;
     private readonly ApplicationUser _user;
+    private readonly IJobManager _jobManager;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationUser user) {
+    public HomeController(ILogger<HomeController> logger, ApplicationUser user, IJobManager jobManager) {
         _logger = logger;
         _user = user;
+        _jobManager = jobManager;
     }
 
     public IActionResult Index() => View();
@@ -18,11 +21,18 @@ public class HomeController : Controller {
 
     public IActionResult Register() => View();
 
+    [HttpGet]
     public IActionResult Create() => View();
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Create(User user) {
+        // Filter potential data errors
+        if (user is null || string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.Schedule) || string.IsNullOrWhiteSpace(user.Name)) {
+            ViewBag.message = "Ошибка. Попробуйте ещё раз пожалуйста.";
+            return View("Index");
+        }
+
         // Check if there is already such an email
         List<User> pplWithThisEmail = _user.UserRegistration.Where(u => u.Email == user.Email)?.ToList() ?? new();
         if (pplWithThisEmail.Any()) {
@@ -32,12 +42,32 @@ public class HomeController : Controller {
         user.RegDate = DateTime.Now;
         _user.Add(user);
         _user.SaveChanges();
-        ViewBag.message = $"Задание пользователя {user.Name} сохранено.";
-        if (pplWithThisEmail.Any()) ViewBag.message += $" Предыдущие записи с {user.Email} были удалены.";
-        return View("Index");
+        string message = $"Задание пользователя {user.Name} сохранено.";
+        //if (pplWithThisEmail.Any()) message += $" Предыдущие записи с {user.Email} были удалены.";
+        ViewBag.message = message;
+
+
+        // Form email
+        Email email = new() { 
+            EmailAddress = user.Email,
+            Subject = $"Литтлфан для вас, {user.Name}",
+            Body = "Шутка дня!"
+        };
+
+        _jobManager.AddEmailJob(email, user.Schedule);
+
+        return View("JobAdded");
     }
 
+    [HttpPost]
+    public IActionResult DeleteByEmail(User user) {
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        int count =  _jobManager.DeleteEmailJob(user.Email);
+        ViewBag.message = $"Количество удалённых заданий с адресом {user.Email}: {count}";
+
+        return View("UserDeleted");
+    }
+
+     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error() => View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 }

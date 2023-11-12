@@ -1,12 +1,12 @@
 ﻿@model SendMeLittleFun.WebApp.Models.User;
 
 @{
-    ViewData["Title"] = "Request an email with little fun right here";
+    ViewData["Title"] = "Здесь получи литтлфан";
 
         List<SelectListItem> CronCommands = new() {
-        new SelectListItem("В 10:15am каждый день", "0 15 10 * * ? *"),
-        new SelectListItem("В 10:15am каждый день с Понедельника по Пятницу", "0 15 10 ? * MON-FRI"),
-        new SelectListItem("Никогда не присылать", "-")
+        new SelectListItem("В 10:15am каждый день", "15 10 * * *"),
+        new SelectListItem("В 10:15am каждый день с Понедельника по Пятницу", "5 10 * * MON-FRI"),
+        new SelectListItem("Каждую минуту", "* * * * *"),
     };
 
 }
@@ -17,9 +17,9 @@
     Каждый. Божий. День.
 </h1> <br /> <br />
 
-<div class="row">
+<div class="row border-10">
     <div class="col-md-9">
-        <form asp-action="Create">
+        <form asp-controller="Home" asp-action="Create" id="TheForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
@@ -47,9 +47,30 @@
             <br /> <br />
             <div class="form-group">
                 <input type="submit" value="Сохранить" class="btn btn-primary" />
+                <input type="reset" value="Очистить форму" class="btn btn-primary"/>
             </div>
-            <br />
-            <b>@ViewBag.message</b>
+        </form>
+    </div>
+</div>
+
+<br /> <br />
+<div class="row border-10">
+
+    <p> Введи свою почту здесь, если хочешь удалить задания.</p>
+
+    <div class="col-md-9">
+        <form asp-controller="Home" asp-action="DeleteByEmail">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Удали меня!" class="btn btn-primary" />
+            </div>
         </form>
     </div>
 </div>
@@ -61,3 +82,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

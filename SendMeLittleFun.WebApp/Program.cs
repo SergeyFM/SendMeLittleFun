@@ -2,6 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using SendMeLittleFun.WebApp.Models;
+using Hangfire;
+using Hangfire.SqlServer;
+using Hangfire.Dashboard;
+using SendMeLittleFun.WebApp.Services;
+
 namespace SendMeLittleFun.WebApp;
 
 
@@ -12,6 +17,28 @@ public class Program {
         // Add services to the container.
         builder.Services.AddDbContext<ApplicationUser>(x => x.UseSqlServer(connectionString));
         builder.Services.AddControllersWithViews();
+        builder.Services.AddScoped<IEmailService, EmailService>();
+        builder.Services.AddScoped<IJobManager, JobManager>();
+
+        // HangFire
+
+        builder.Services.AddHangfire(hf => {
+            hf.SetDataCompatibilityLevel(CompatibilityLevel.Version_180);
+            hf.UseSimpleAssemblyNameTypeSerializer();
+            hf.UseRecommendedSerializerSettings();
+            hf.UseColouredConsoleLogProvider();
+            hf.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireConnection"),
+                new SqlServerStorageOptions {
+                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                QueuePollInterval = TimeSpan.Zero,
+                UseRecommendedIsolationLevel = true,
+                DisableGlobalLocks = true
+            });
+            var server = new BackgroundJobServer(new BackgroundJobServerOptions {ServerName = "HangFire server" });
+
+
+        } );
 
         var app = builder.Build();
 
@@ -24,6 +51,11 @@ public class Program {
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
+
+        // Hangfire
+        app.UseHangfireDashboard("/hangfire", new DashboardOptions {
+            IsReadOnlyFunc = (DashboardContext context) => false // READ ONLY OR NOT
+        });
 
         app.UseRouting();
 

@@ -19,7 +19,15 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-color: #d4edfa;
+    background-color: white;
+}
+
+.border-10 {
+    border-width: 1px;
+    border-style: solid;
+    border-color: lightgrey;
+    border-spacing : 15px;
+    padding: 15px;
 }
 
 
