@@ -30,4 +30,8 @@ body {
     padding: 15px;
 }
 
+.bg-thebar {
+    --bs-bg-opacity: 1;
+    background-color: #f8f8f8 !important; 
+}
 
