@@ -16,7 +16,7 @@ public class JobManager : IJobManager {
         DeleteEmailJob(email.EmailAddress);
 
         // Fire and forget a job
-        RecurringJob.AddOrUpdate($"{jobPrefix}{email.EmailAddress}", () => _emailService.Send(email.EmailAddress, email.Subject, email.Body), cronExpr);
+        RecurringJob.AddOrUpdate($"{jobPrefix}{email.EmailAddress}", () => _emailService.Send(email), cronExpr);
 
     }
 

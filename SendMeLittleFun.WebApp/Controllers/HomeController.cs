@@ -6,13 +6,15 @@ using SendMeLittleFun.WebApp.Services;
 namespace SendMeLittleFun.WebApp.Controllers;
 public class HomeController : Controller {
     private readonly ILogger<HomeController> _logger;
-    private readonly ApplicationUser _user;
+    private readonly ApplicationDbContext _user;
     private readonly IJobManager _jobManager;
+    private readonly IRandomFunEmailGenerator _randomFunEmailGenerator;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationUser user, IJobManager jobManager) {
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext user, IJobManager jobManager, IRandomFunEmailGenerator randomFunEmailGenerator) {
         _logger = logger;
         _user = user;
         _jobManager = jobManager;
+        _randomFunEmailGenerator = randomFunEmailGenerator;
     }
 
     public IActionResult Index() => View();
@@ -48,11 +50,7 @@ public class HomeController : Controller {
 
 
         // Form email
-        Email email = new() { 
-            EmailAddress = user.Email,
-            Subject = $"Литтлфан для вас, {user.Name}",
-            Body = "Шутка дня!"
-        };
+        Email email = _randomFunEmailGenerator.ComposeEmail(user.Email, user.Name);
 
         _jobManager.AddEmailJob(email, user.Schedule);
 

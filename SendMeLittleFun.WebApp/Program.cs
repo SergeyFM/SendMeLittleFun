@@ -6,6 +6,8 @@ using Hangfire;
 using Hangfire.SqlServer;
 using Hangfire.Dashboard;
 using SendMeLittleFun.WebApp.Services;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 namespace SendMeLittleFun.WebApp;
 
@@ -15,10 +17,12 @@ public class Program {
         var builder = WebApplication.CreateBuilder(args);
         var connectionString = builder.Configuration.GetConnectionString("Myconnection");
         // Add services to the container.
-        builder.Services.AddDbContext<ApplicationUser>(x => x.UseSqlServer(connectionString));
+        builder.Services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(connectionString));
         builder.Services.AddControllersWithViews();
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IJobManager, JobManager>();
+        builder.Services.AddScoped<IRandomFunEmailGenerator, RandomFunEmailGenerator>();
+        builder.Services.AddHostedService<JokesUpdateService>();
 
         // HangFire
 
@@ -41,6 +45,8 @@ public class Program {
         } );
 
         var app = builder.Build();
+
+          
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment()) {
