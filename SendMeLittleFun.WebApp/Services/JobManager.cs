@@ -18,7 +18,6 @@ public class JobManager : IJobManager {
 
     public void AddEmailJob(User user) {
         string cronExpr = user.Schedule;
-        string jobPrefix = _config.GetValue<string>("jobPrefix") ?? "";
         // First remove previous jobs for this email
         DeleteEmailJob(user.Email);
 
@@ -57,7 +56,7 @@ public class JobManager : IJobManager {
     private string? getJobNameByUser(User user) {
         string emailAddress = user.Email;
         if (string.IsNullOrWhiteSpace(emailAddress)) return null;
-        string jobPrefix = _config.GetValue<string>("jobPrefix") ?? "";
+        string jobPrefix = _config["jobPrefix"] ?? "";
         string[] emailTwoParts = emailAddress.Split('@');
         string firstPart = emailTwoParts.First();
         string secondPart = emailTwoParts.Length > 1 ? emailTwoParts.Last() : "";

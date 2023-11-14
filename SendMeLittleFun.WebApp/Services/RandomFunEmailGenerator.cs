@@ -12,13 +12,13 @@ public class RandomFunEmailGenerator : IRandomFunEmailGenerator {
     public Email ComposeEmail(string emailAddress, string userName) {
 
         // Get a random joke
-        List<Joke>? allJokes = _context.Jokes.ToList();
+        IQueryable<Joke> allJokes = _context.Jokes;
 
         int numberOfJokesInDB = allJokes?.Count() ?? 0;
         int randomIndex = new Random().Next(numberOfJokesInDB);
         Console.WriteLine($"ComposeEmail >> numberOfJokesInDB: {numberOfJokesInDB}, randomIndex: {randomIndex}");
         Joke theJoke = allJokes is not null && allJokes.Count() > 0
-            ? allJokes.ElementAt(randomIndex)
+            ? allJokes.Skip(randomIndex).First()
             : new("Желаю тебе отличного дня, и это не шутка!");
 
         // Return an email to send

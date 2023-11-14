@@ -4,7 +4,7 @@ namespace SendMeLittleFun.WebApp.Services;
 
 public class JokesUpdateService : IHostedService {
     private readonly IServiceProvider _serviceProvider;
-    private IConfiguration _config;
+    private readonly IConfiguration _config;
 
     public JokesUpdateService(IServiceProvider serviceProvider, IConfiguration config) {
         _serviceProvider = serviceProvider;
@@ -23,8 +23,7 @@ public class JokesUpdateService : IHostedService {
     private void LoadNewJokesToDB(ApplicationDbContext _appDbContext) {
         Console.WriteLine("Find and load new jokes to DB...");
         List<Joke> allJokes = _appDbContext.Jokes.ToList();
-        Console.WriteLine("Right now we have following jokes:");
-        foreach (var joke in allJokes) Console.WriteLine("> " + joke.JokeText);
+        Console.WriteLine($"Right now we have {allJokes.Count()} jokes in the DB");
 
         Console.WriteLine("Adding new jokes...");
         List<Joke> jokesFromTheFile = GetJokesFromFile();
