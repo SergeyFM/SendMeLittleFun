@@ -12,8 +12,8 @@ using SendMeLittleFun.WebApp.Models;
 namespace SendMeLittleFun.WebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231113192747_Jokes")]
-    partial class Jokes
+    [Migration("20231113210235_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ namespace SendMeLittleFun.WebApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Text")
+                    b.Property<string>("JokeText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

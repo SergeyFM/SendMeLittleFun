@@ -6,13 +6,13 @@ using SendMeLittleFun.WebApp.Services;
 namespace SendMeLittleFun.WebApp.Controllers;
 public class HomeController : Controller {
     private readonly ILogger<HomeController> _logger;
-    private readonly ApplicationDbContext _user;
+    private readonly ApplicationDbContext _appDbContext;
     private readonly IJobManager _jobManager;
     private readonly IRandomFunEmailGenerator _randomFunEmailGenerator;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext user, IJobManager jobManager, IRandomFunEmailGenerator randomFunEmailGenerator) {
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext appDbContext, IJobManager jobManager, IRandomFunEmailGenerator randomFunEmailGenerator) {
         _logger = logger;
-        _user = user;
+        _appDbContext = appDbContext;
         _jobManager = jobManager;
         _randomFunEmailGenerator = randomFunEmailGenerator;
     }
@@ -36,23 +36,24 @@ public class HomeController : Controller {
         }
 
         // Check if there is already such an email
-        List<User> pplWithThisEmail = _user.UserRegistration.Where(u => u.Email == user.Email)?.ToList() ?? new();
+        List<User> pplWithThisEmail = _appDbContext.UserRegistration.Where(u => u.Email == user.Email)?.ToList() ?? new();
         if (pplWithThisEmail.Any()) {
-            _user.RemoveRange(pplWithThisEmail);
-            _user.SaveChanges();
+            _appDbContext.RemoveRange(pplWithThisEmail);
+            _appDbContext.SaveChanges();
         }
         user.RegDate = DateTime.Now;
-        _user.Add(user);
-        _user.SaveChanges();
-        string message = $"Задание пользователя {user.Name} сохранено.";
-        //if (pplWithThisEmail.Any()) message += $" Предыдущие записи с {user.Email} были удалены.";
-        ViewBag.message = message;
+        user.UserGuid = Guid.NewGuid();
 
+        _appDbContext.Add(user);
+        _appDbContext.SaveChanges();
+
+        string message = $"Задание пользователя {user.Name} сохранено.";
+        ViewBag.message = message;
 
         // Form email
         Email email = _randomFunEmailGenerator.ComposeEmail(user.Email, user.Name);
 
-        _jobManager.AddEmailJob(email, user.Schedule);
+        _jobManager.AddEmailJob(email, user);
 
         return View("JobAdded");
     }

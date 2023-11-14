@@ -19,4 +19,6 @@ public class User {
     public string Schedule { get; set; } = "";
 
     public DateTime RegDate { get; set; }
+
+    public Guid UserGuid { get; set; }
 }
