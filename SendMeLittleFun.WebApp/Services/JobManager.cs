@@ -5,35 +5,34 @@ using SendMeLittleFun.WebApp.Models;
 namespace SendMeLittleFun.WebApp.Services;
 
 public class JobManager : IJobManager {
-    private IEmailService _emailService;
+    private IJobEmailSender _jobEmailSender;
     private IConfiguration _config;
     private ApplicationDbContext _context;
-    public JobManager(IEmailService emailService, IConfiguration config, ApplicationDbContext dbContext) {
-        _emailService = emailService;
+    public JobManager(IJobEmailSender emailService, IConfiguration config, ApplicationDbContext dbContext) {
+        _jobEmailSender = emailService;
         _config = config;
         _context = dbContext;
     }
 
 
 
-    public void AddEmailJob(Email email, User user) {
+    public void AddEmailJob(User user) {
         string cronExpr = user.Schedule;
         string jobPrefix = _config.GetValue<string>("jobPrefix") ?? "";
         // First remove previous jobs for this email
-        DeleteEmailJob(email.EmailAddress);
+        DeleteEmailJob(user.Email);
 
         // Make a job name
-
         string? jobName = getJobNameByUser(user);
         if (jobName is null) return;
 
         // Fire and forget a job
-        RecurringJob.AddOrUpdate(jobName, () => _emailService.Send(email), cronExpr);
+        RecurringJob.AddOrUpdate(jobName, () => _jobEmailSender.Send(user), user.Schedule);
 
     }
 
     public int DeleteEmailJob(string emailAddress) {
-        
+
         // Search for guid by email
         Guid foundGuid = new();
         List<User> allUsersWithGuid = _context.UserRegistration.Where(u => u.Email == emailAddress).ToList();

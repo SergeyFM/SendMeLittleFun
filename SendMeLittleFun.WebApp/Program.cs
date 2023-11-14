@@ -15,7 +15,7 @@ public class Program {
         // Add services to the container.
         builder.Services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(connectionString));
         builder.Services.AddControllersWithViews();
-        builder.Services.AddScoped<IEmailService, EmailService>();
+        builder.Services.AddScoped<IJobEmailSender, JobEmailSender>();
         builder.Services.AddScoped<IJobManager, JobManager>();
         builder.Services.AddScoped<IRandomFunEmailGenerator, RandomFunEmailGenerator>();
         builder.Services.AddHostedService<JokesUpdateService>();

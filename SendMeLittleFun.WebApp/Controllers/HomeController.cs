@@ -50,10 +50,9 @@ public class HomeController : Controller {
         string message = $"Задание пользователя {user.Name} сохранено.";
         ViewBag.message = message;
 
-        // Form email
-        Email email = _randomFunEmailGenerator.ComposeEmail(user.Email, user.Name);
 
-        _jobManager.AddEmailJob(email, user);
+
+        _jobManager.AddEmailJob(user);
 
         return View("JobAdded");
     }
