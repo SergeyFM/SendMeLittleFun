@@ -1,13 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using SendMeLittleFun.WebApp.Models;
 using Hangfire;
-using Hangfire.SqlServer;
 using Hangfire.Dashboard;
+using Hangfire.SqlServer;
+using Microsoft.EntityFrameworkCore;
+using SendMeLittleFun.WebApp.Models;
 using SendMeLittleFun.WebApp.Services;
-using System.Globalization;
-using Microsoft.AspNetCore.Localization;
 
 namespace SendMeLittleFun.WebApp;
 
@@ -34,19 +30,19 @@ public class Program {
             hf.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireConnection"),
                 new SqlServerStorageOptions {
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-                SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-                QueuePollInterval = TimeSpan.Zero,
-                UseRecommendedIsolationLevel = true,
-                DisableGlobalLocks = true
-            });
-            var server = new BackgroundJobServer(new BackgroundJobServerOptions {ServerName = "HangFire server" });
+                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                    QueuePollInterval = TimeSpan.Zero,
+                    UseRecommendedIsolationLevel = true,
+                    DisableGlobalLocks = true
+                });
+            var server = new BackgroundJobServer(new BackgroundJobServerOptions { ServerName = "HangFire server" });
 
 
-        } );
+        });
 
         var app = builder.Build();
 
-          
+
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment()) {
