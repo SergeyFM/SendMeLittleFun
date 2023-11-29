@@ -26,7 +26,7 @@ public class JobManager : IJobManager {
         if (jobName is null) return;
 
         // Fire and forget a job
-        RecurringJob.AddOrUpdate(jobName, () => _jobEmailSender.Send(user), user.Schedule);
+        RecurringJob.AddOrUpdate(jobName, () => _jobEmailSender.Send(user), user.Schedule, TimeZoneInfo.Local);
 
     }
 
